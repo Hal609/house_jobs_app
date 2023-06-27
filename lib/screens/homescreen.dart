@@ -131,6 +131,6 @@ Container continueButton(BuildContext context) {
       Alignment.centerLeft,
       true, () {
     Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => const mainScreen()));
+        context, MaterialPageRoute(builder: (context) => const MainScreen()));
   }, const Icon(Icons.amp_stories_outlined));
 }
