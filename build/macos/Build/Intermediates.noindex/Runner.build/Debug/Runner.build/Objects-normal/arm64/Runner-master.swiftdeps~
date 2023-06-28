@@ -1,8 +1,0 @@
-version: "Apple Swift version 5.7.2 (swiftlang-5.7.2.135.5 clang-1400.0.29.51)"
-options: "b08e31718919effe7618d75c348860884a1befa5a3286836c6530540b1864967"
-build_start_time: [1674036717, 125470161]
-build_end_time: [1674036717, 281891822]
-inputs:
-  "/Users/hal/Documents/FlutterApp/house_jobs_app/macos/Flutter/GeneratedPluginRegistrant.swift": !private [1674036696, 68705320]
-  "/Users/hal/Documents/FlutterApp/house_jobs_app/macos/Runner/AppDelegate.swift": !private [1671141040, 0]
-  "/Users/hal/Documents/FlutterApp/house_jobs_app/macos/Runner/MainFlutterWindow.swift": !private [1671141040, 0]

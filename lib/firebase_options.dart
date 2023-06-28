@@ -54,11 +54,11 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyDqNpYE1XLpMnjbGMzC_AfqQFq74XLjmj4',
-    appId: '1:513681868910:ios:f17643f41b126f4e33be7f',
+    appId: '1:513681868910:ios:853d2ba1b76828a133be7f',
     messagingSenderId: '513681868910',
     projectId: 'house-jobs-testing',
     storageBucket: 'house-jobs-testing.appspot.com',
-    iosClientId: '513681868910-q91sddk6jqle25o84hieue2007c4qvh2.apps.googleusercontent.com',
-    iosBundleId: 'com.example.houseJobs',
+    iosClientId: '513681868910-2gqiduedi4hhhi3dcdi60fkc6urg924c.apps.googleusercontent.com',
+    iosBundleId: 'com.example.myApp',
   );
 }
