@@ -14,9 +14,6 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  final TextEditingController _emailTextController = TextEditingController();
-  final TextEditingController _passwordTextController = TextEditingController();
-
   int _selectedIndex = 0;
 
   static final List<Widget> _widgetOptions = <Widget>[

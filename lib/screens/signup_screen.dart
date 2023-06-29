@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:house_jobs/screens/homescreen.dart';
-
 import '../reusable_widgets/reusable_widgets.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -52,24 +51,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 const SizedBox(
                   height: 5,
                 ),
-                if (!passwordsMatch)
-                  Row(children: const <Widget>[
-                    Icon(
-                      Icons.error_outline_sharp,
-                      color: Colors.red,
-                    ),
-                    SizedBox(
-                      width: 3,
-                    ),
-                    Text(
-                      'Passwords do not match',
-                      style: TextStyle(color: Colors.red),
-                    ),
-                  ]),
-                if (passwordsMatch)
-                  const SizedBox(
-                    height: 5,
-                  ),
+                _buildPasswordMismatchWidget(),
                 reusableTextField("Enter Password", Icons.lock_outline, true,
                     _passwordTextController, () {
                   if (_confirmTextController.text != "") {
@@ -124,6 +106,26 @@ class _SignUpScreenState extends State<SignUpScreen> {
           );
         },
       );
+    }
+  }
+
+  Widget _buildPasswordMismatchWidget() {
+    if (!passwordsMatch) {
+      return Row(
+        children: const <Widget>[
+          Icon(
+            Icons.error_outline_sharp,
+            color: Colors.red,
+          ),
+          SizedBox(width: 3),
+          Text(
+            'Passwords do not match',
+            style: TextStyle(color: Colors.red),
+          ),
+        ],
+      );
+    } else {
+      return const SizedBox(height: 5);
     }
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:house_jobs/screens/main_screen.dart';
 import 'package:house_jobs/screens/signin_screen.dart';
 import 'package:house_jobs/screens/signup_screen.dart';
@@ -12,8 +13,13 @@ class Homescreen extends StatefulWidget {
 }
 
 class _Homescreen extends State<Homescreen> {
-  final TextEditingController _emailTextController = TextEditingController();
-  final TextEditingController _passwordTextController = TextEditingController();
+  final GoogleSignIn _googleSignIn = GoogleSignIn(
+    scopes: [
+      'email',
+      'https://www.googleapis.com/auth/contacts.readonly',
+    ],
+  );
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,7 +40,7 @@ class _Homescreen extends State<Homescreen> {
               children: <Widget>[
                 logoWidget("assets/images/alogo-2.png"),
                 signInWithButton(context, false, () {}),
-                signInWithButton(context, true, () {}),
+                signInWithButton(context, true, _handleSignIn),
                 signUp(context, () {
                   Navigator.push(
                       context,
@@ -49,6 +55,14 @@ class _Homescreen extends State<Homescreen> {
         ),
       ),
     );
+  }
+
+  Future<void> _handleSignIn() async {
+    try {
+      await _googleSignIn.signIn();
+    } catch (error) {
+      print(error);
+    }
   }
 
   Row signUpOption() {
@@ -130,7 +144,9 @@ Container continueButton(BuildContext context) {
       FontWeight.bold,
       Alignment.centerLeft,
       true, () {
-    Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => const MainScreen()));
+    Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => const MainScreen()),
+        (route) => false);
   }, const Icon(Icons.amp_stories_outlined));
 }
