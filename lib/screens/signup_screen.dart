@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:house_jobs/screens/homescreen.dart';
 
@@ -11,8 +12,12 @@ class SignUpScreen extends StatefulWidget {
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
+  final TextEditingController _usernameTextController = TextEditingController();
   final TextEditingController _emailTextController = TextEditingController();
   final TextEditingController _passwordTextController = TextEditingController();
+  final TextEditingController _confirmTextController = TextEditingController();
+  bool passwordsMatch = true;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,32 +43,88 @@ class _SignUpScreenState extends State<SignUpScreen> {
               children: <Widget>[
                 logoWidget("assets/images/alogo-2.png"),
                 reusableTextField("Enter Username", Icons.person_outline_sharp,
-                    false, _emailTextController),
+                    false, _usernameTextController, () {}),
                 const SizedBox(
-                  height: 20,
+                  height: 10,
                 ),
                 reusableTextField("Enter Email", Icons.email_outlined, false,
-                    _emailTextController),
+                    _emailTextController, () {}),
                 const SizedBox(
-                  height: 20,
+                  height: 5,
                 ),
+                if (!passwordsMatch)
+                  Row(children: const <Widget>[
+                    Icon(
+                      Icons.error_outline_sharp,
+                      color: Colors.red,
+                    ),
+                    SizedBox(
+                      width: 3,
+                    ),
+                    Text(
+                      'Passwords do not match',
+                      style: TextStyle(color: Colors.red),
+                    ),
+                  ]),
+                if (passwordsMatch)
+                  const SizedBox(
+                    height: 5,
+                  ),
                 reusableTextField("Enter Password", Icons.lock_outline, true,
-                    _passwordTextController),
+                    _passwordTextController, () {
+                  if (_confirmTextController.text != "") {
+                    setState(() {
+                      passwordsMatch = _passwordTextController.text ==
+                          _confirmTextController.text;
+                    });
+                  }
+                }),
                 const SizedBox(
                   height: 10,
                 ),
                 reusableTextField("Reenter Password", Icons.lock, true,
-                    _passwordTextController),
+                    _confirmTextController, () {
+                  setState(() {
+                    passwordsMatch = _passwordTextController.text ==
+                        _confirmTextController.text;
+                  });
+                }),
                 const SizedBox(
                   height: 40,
                 ),
-                signInUp(context, false, () {}),
+                signInUp(context, false, checkPasswordMatch),
               ],
             ),
           ),
         ),
       ),
     );
+  }
+
+  void checkPasswordMatch() {
+    if (_passwordTextController.text == _confirmTextController.text) {
+      // Passwords match
+      print("Match");
+    } else {
+      // Passwords don't match, show an error message or perform desired action
+      showCupertinoDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return CupertinoAlertDialog(
+            title: const Text("Error"),
+            content: const Text("Passwords do not match."),
+            actions: <Widget>[
+              CupertinoDialogAction(
+                child: const Text("OK"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
   }
 }
 

@@ -20,7 +20,7 @@ Image imageLogo(String imageName, bool hasColour, Color colour, double size) {
 }
 
 TextField reusableTextField(String text, IconData icon, bool isPasswordType,
-    TextEditingController controller) {
+    TextEditingController controller, Function changed) {
   return TextField(
     controller: controller,
     obscureText: isPasswordType,
@@ -45,6 +45,9 @@ TextField reusableTextField(String text, IconData icon, bool isPasswordType,
     keyboardType: isPasswordType
         ? TextInputType.visiblePassword
         : TextInputType.emailAddress,
+    onChanged: (String) {
+      changed();
+    },
   );
 }
 
