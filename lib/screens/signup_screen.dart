@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:house_jobs/screens/homescreen.dart';
 import '../reusable_widgets/reusable_widgets.dart';
 
 class SignUpScreen extends StatefulWidget {
