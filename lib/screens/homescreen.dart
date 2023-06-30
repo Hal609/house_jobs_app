@@ -1,9 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:house_jobs/screens/main_screen.dart';
 import 'package:house_jobs/screens/signin_screen.dart';
 import 'package:house_jobs/screens/signup_screen.dart';
 import '../reusable_widgets/reusable_widgets.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Homescreen extends StatefulWidget {
   const Homescreen({super.key});
@@ -12,15 +14,62 @@ class Homescreen extends StatefulWidget {
   State<Homescreen> createState() => _Homescreen();
 }
 
+final GoogleSignIn _googleSignIn = GoogleSignIn(
+  scopes: [
+    'email',
+    'https://www.googleapis.com/auth/contacts.readonly',
+  ],
+);
+
 class _Homescreen extends State<Homescreen> {
-  final GoogleSignIn _googleSignIn = GoogleSignIn(
-    scopes: [
-      'email',
-      'https://www.googleapis.com/auth/contacts.readonly',
-    ],
-  );
+  GoogleSignInAccount? _currentUser;
+  bool _isAuthorized = false; // has granted permissions?
+  String _contactText = '';
 
   @override
+  void initState() {
+    super.initState();
+    _googleSignIn.onCurrentUserChanged
+        .listen((GoogleSignInAccount? account) async {
+      // In mobile, being authenticated means being authorized...
+      bool isAuthorized = account != null;
+
+      setState(() {
+        _currentUser = account;
+        _isAuthorized = isAuthorized;
+      });
+    });
+    _googleSignIn.signInSilently();
+  }
+
+  Widget _accountLogo() {
+    final GoogleSignInAccount? googleUser = _currentUser;
+    if (googleUser != null) {
+      // The user is Authenticated
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: <Widget>[
+          ListTile(
+            leading: GoogleUserCircleAvatar(
+              identity: googleUser,
+            ),
+            title: Text(googleUser.displayName ?? ''),
+            subtitle: Text(googleUser.email),
+          ),
+          const Text('Signed in successfully.'),
+        ],
+      );
+    } else {
+      // The user is NOT Authenticated
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: <Widget>[
+          const Text('You are not currently signed in.'),
+        ],
+      );
+    }
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
@@ -38,6 +87,7 @@ class _Homescreen extends State<Homescreen> {
                 20, MediaQuery.of(context).size.height * 0.05, 20, 0),
             child: Column(
               children: <Widget>[
+                _accountLogo(),
                 logoWidget("assets/images/alogo-2.png"),
                 signInWithButton(context, false, () {}),
                 signInWithButton(context, true, _handleSignIn),
@@ -105,7 +155,7 @@ Container signInWithButton(
     isGoogle
         ? const Color.fromARGB(255, 217, 217, 217)
         : const Color.fromARGB(255, 92, 92, 92), // Tap colour
-    isGoogle ? "Sign up with Google" : "Sign up with Apple", // Button text
+    isGoogle ? "Sign in with Google" : "Sign in with Apple", // Button text
     isGoogle ? Colors.black : Colors.white, // Text colour
     16, // Font size
     FontWeight.bold,
@@ -144,9 +194,7 @@ Container continueButton(BuildContext context) {
       FontWeight.bold,
       Alignment.centerLeft,
       true, () {
-    Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (context) => const MainScreen()),
-        (route) => false);
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => const MainScreen()));
   }, const Icon(Icons.amp_stories_outlined));
 }
