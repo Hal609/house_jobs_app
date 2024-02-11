@@ -1,11 +1,9 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:house_jobs/screens/main_screen.dart';
 import 'package:house_jobs/screens/signin_screen.dart';
 import 'package:house_jobs/screens/signup_screen.dart';
+import 'package:house_jobs/services/auth_service.dart';
 import '../reusable_widgets/reusable_widgets.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class Homescreen extends StatefulWidget {
   const Homescreen({super.key});
@@ -14,62 +12,63 @@ class Homescreen extends StatefulWidget {
   State<Homescreen> createState() => _Homescreen();
 }
 
-final GoogleSignIn _googleSignIn = GoogleSignIn(
-  scopes: [
-    'email',
-    'https://www.googleapis.com/auth/contacts.readonly',
-  ],
-);
+// const FlutterSecureStorage _storage = FlutterSecureStorage();
+
+// final GoogleSignIn _googleSignIn = GoogleSignIn(
+//   scopes: [
+//     'email',
+//     'https://www.googleapis.com/auth/contacts.readonly',
+//   ],
+// );
 
 class _Homescreen extends State<Homescreen> {
-  GoogleSignInAccount? _currentUser;
-  bool _isAuthorized = false; // has granted permissions?
-  String _contactText = '';
+  // String userName = '';
+  // String userImage = '';
+  // String userID = '';
+  // String userEmail = '';
+  // String userServerAuthCode = '';
+
+  // GoogleSignInAccount? _currentUser;
 
   @override
-  void initState() {
-    super.initState();
-    _googleSignIn.onCurrentUserChanged
-        .listen((GoogleSignInAccount? account) async {
-      // In mobile, being authenticated means being authorized...
-      bool isAuthorized = account != null;
+  // void initState() {
+  //   super.initState();
+  //   _loadUserData();
+  //   _checkLoggedIn();
+  //   _googleSignIn.onCurrentUserChanged
+  //       .listen((GoogleSignInAccount? account) async {
+  //     setState(() {
+  //       _currentUser = account;
+  //     });
+  //   });
+  //   _googleSignIn.signInSilently();
+  // }
 
-      setState(() {
-        _currentUser = account;
-        _isAuthorized = isAuthorized;
-      });
-    });
-    _googleSignIn.signInSilently();
-  }
+  // Future<void> _checkLoggedIn() async {
+  //   final bool isLoggedIn = await _storage.read(key: 'isLoggedIn') == 'true';
+  //   if (isLoggedIn) {
+  //     Navigator.pushAndRemoveUntil(
+  //       context,
+  //       MaterialPageRoute(builder: (context) => const MainScreen()),
+  //       (route) => false,
+  //     );
+  //   }
+  // }
 
-  Widget _accountLogo() {
-    final GoogleSignInAccount? googleUser = _currentUser;
-    if (googleUser != null) {
-      // The user is Authenticated
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: <Widget>[
-          ListTile(
-            leading: GoogleUserCircleAvatar(
-              identity: googleUser,
-            ),
-            title: Text(googleUser.displayName ?? ''),
-            subtitle: Text(googleUser.email),
-          ),
-          const Text('Signed in successfully.'),
-        ],
-      );
-    } else {
-      // The user is NOT Authenticated
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: <Widget>[
-          const Text('You are not currently signed in.'),
-        ],
-      );
-    }
-  }
+  // Future<void> _loadUserData() async {
+  //   final bool isLoggedIn = await _storage.read(key: 'isLoggedIn') == 'true';
+  //   if (isLoggedIn) {
+  //     setState(() async {
+  //       userID = await _storage.read(key: 'id') ?? '';
+  //       userName = await _storage.read(key: 'displayName') ?? '';
+  //       userEmail = await _storage.read(key: 'email') ?? '';
+  //       userImage = await _storage.read(key: 'photoUrl') ?? '';
+  //       userServerAuthCode = await _storage.read(key: 'serverAuthCode') ?? '';
+  //     });
+  //   }
+  // }
 
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
@@ -87,10 +86,11 @@ class _Homescreen extends State<Homescreen> {
                 20, MediaQuery.of(context).size.height * 0.05, 20, 0),
             child: Column(
               children: <Widget>[
-                _accountLogo(),
+                // accountLogo(_currentUser),
                 logoWidget("assets/images/alogo-2.png"),
                 signInWithButton(context, false, () {}),
-                signInWithButton(context, true, _handleSignIn),
+                signInWithButton(
+                    context, true, () => AuthService().signInWithGoogle()),
                 signUp(context, () {
                   Navigator.push(
                       context,
@@ -107,41 +107,61 @@ class _Homescreen extends State<Homescreen> {
     );
   }
 
-  Future<void> _handleSignIn() async {
-    try {
-      await _googleSignIn.signIn();
-    } catch (error) {
-      print(error);
-    }
-  }
+  // Future<void> _handleSignIn() async {
+  //   try {
+  //     final GoogleSignInAccount? account = await _googleSignIn.signIn();
+  //     if (account != null) {
+  //       // Save the user information in secure storage
+  //       await _storage.write(key: 'isLoggedIn', value: 'true');
+  //       await _storage.write(key: 'id', value: account.id);
+  //       await _storage.write(key: 'displayName', value: account.displayName);
+  //       await _storage.write(key: 'email', value: account.email);
+  //       await _storage.write(key: 'photoUrl', value: account.photoUrl ?? '');
+  //       await _storage.write(
+  //           key: 'serverAuthCode', value: account.serverAuthCode ?? '');
+
+  //       // Navigate to the MainScreen
+  //       Navigator.pushAndRemoveUntil(
+  //         context,
+  //         MaterialPageRoute(builder: (context) => const MainScreen()),
+  //         (route) => false,
+  //       );
+  //     }
+  //   } catch (error) {
+  //     print(error);
+  //   }
+  // }
 
   Row signUpOption() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const Text(
-          "Already have an account?",
-          style: TextStyle(
-              color: Colors.black87,
-              // fontWeight: FontWeight.bold,
-              fontSize: 16),
-        ),
-        const SizedBox(
-          width: 10,
-        ),
         GestureDetector(
-          onTap: () {
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => const SignInScreen()));
-          },
-          child: const Text(
-            "Log In",
-            style: TextStyle(
-                color: Colors.black87,
-                fontWeight: FontWeight.bold,
-                fontSize: 16),
-          ),
-        )
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const SignInScreen()));
+            },
+            child: const Row(children: <Widget>[
+              Text(
+                "Already have an account?",
+                style: TextStyle(
+                    color: Colors.black87,
+                    // fontWeight: FontWeight.bold,
+                    fontSize: 16),
+              ),
+              SizedBox(
+                width: 10,
+              ),
+              Text(
+                "Log In",
+                style: TextStyle(
+                    color: Colors.black87,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16),
+              ),
+            ]))
       ],
     );
   }
@@ -194,7 +214,9 @@ Container continueButton(BuildContext context) {
       FontWeight.bold,
       Alignment.centerLeft,
       true, () {
-    Navigator.push(
-        context, MaterialPageRoute(builder: (context) => const MainScreen()));
+    Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => const MainScreen()),
+        (route) => false);
   }, const Icon(Icons.amp_stories_outlined));
 }

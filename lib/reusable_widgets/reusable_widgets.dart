@@ -1,4 +1,33 @@
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+
+Widget accountLogo(currentUser) {
+  final GoogleSignInAccount? googleUser = currentUser;
+  if (googleUser != null) {
+    // The user is Authenticated
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: <Widget>[
+        ListTile(
+          leading: GoogleUserCircleAvatar(
+            identity: googleUser,
+          ),
+          title: Text(googleUser.displayName ?? ''),
+          subtitle: Text(googleUser.email),
+        ),
+        const Text('Signed in successfully.'),
+      ],
+    );
+  } else {
+    // The user is NOT Authenticated
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: <Widget>[
+        const Text('You are not currently signed in.'),
+      ],
+    );
+  }
+}
 
 Image logoWidget(String imageName) {
   return Image.asset(

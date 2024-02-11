@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:house_jobs/screens/homescreen.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import '../reusable_widgets/reusable_widgets.dart';
 import 'menu_pages/home_page.dart';
 import 'menu_pages/favorites_page.dart';
 import 'menu_pages/profile_page.dart';
@@ -21,9 +22,11 @@ final GoogleSignIn _googleSignIn = GoogleSignIn(
 );
 
 class _MainScreenState extends State<MainScreen> {
+  String userName = '';
+  String userImage = '';
   GoogleSignInAccount? _currentUser;
-  bool _isAuthorized = false; // has granted permissions?
-  String _contactText = '';
+  // bool _isAuthorized = false; // has granted permissions?
+  // String _contactText = '';
 
   @override
   void initState() {
@@ -31,14 +34,26 @@ class _MainScreenState extends State<MainScreen> {
     _googleSignIn.onCurrentUserChanged
         .listen((GoogleSignInAccount? account) async {
       // In mobile, being authenticated means being authorized...
-      bool isAuthorized = account != null;
+      // bool isAuthorized = account != null;
 
       setState(() {
         _currentUser = account;
-        _isAuthorized = isAuthorized;
+        // _isAuthorized = isAuthorized;
       });
     });
     _googleSignIn.signInSilently();
+    _loadUserData();
+  }
+
+  Future<void> _loadUserData() async {
+    // final SharedPreferences prefs = await SharedPreferences.getInstance();
+    // final bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
+    // if (isLoggedIn) {
+    //   setState(() {
+    //     userName = prefs.getString('userName') ?? '';
+    //     userImage = prefs.getString('userImage') ?? '';
+    //   });
+    // }
   }
 
   int _selectedIndex = 0;
@@ -70,13 +85,8 @@ class _MainScreenState extends State<MainScreen> {
               },
             ),
             CupertinoDialogAction(
+              onPressed: _handleSignOut,
               child: const Text('Logout'),
-              onPressed: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => const Homescreen()),
-                );
-              },
             ),
           ],
         );
@@ -84,31 +94,21 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
-  Widget _accountLogo() {
-    final GoogleSignInAccount? googleUser = _currentUser;
-    if (googleUser != null) {
-      // The user is Authenticated
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: <Widget>[
-          ListTile(
-            leading: GoogleUserCircleAvatar(
-              identity: googleUser,
-            ),
-            title: Text(googleUser.displayName ?? ''),
-            subtitle: Text(googleUser.email),
-          ),
-          const Text('Signed in successfully.'),
-        ],
+  Future<void> _handleSignOut() async {
+    try {
+      await _googleSignIn.signOut();
+      // final SharedPreferences prefs = await SharedPreferences.getInstance();
+      // prefs.setBool('isLoggedIn', false);
+      // prefs.remove('userName');
+      // prefs.remove('userImage');
+      // Navigate back to the sign-in screen or any other desired screen
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => const Homescreen()),
+        (route) => false,
       );
-    } else {
-      // The user is NOT Authenticated
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: <Widget>[
-          const Text('You are not currently signed in.'),
-        ],
-      );
+    } catch (error) {
+      print(error);
     }
   }
 
@@ -137,7 +137,7 @@ class _MainScreenState extends State<MainScreen> {
             padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
             child: Column(
               children: <Widget>[
-                _accountLogo(),
+                accountLogo(_currentUser),
                 _widgetOptions[_selectedIndex], // Display selected page
               ],
             ),
